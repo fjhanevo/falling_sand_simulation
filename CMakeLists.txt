@@ -11,6 +11,7 @@ find_package(glfw3 REQUIRED)
 
 add_executable(falling_sand_simulation
     src/main.cpp
+    src/grid.cpp
     src/external/glad.c
 )
 

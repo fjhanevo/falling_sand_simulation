@@ -31,11 +31,13 @@ public:
     void move(int fromX, int fromY, int toX, int toY);
     void resetUpdateFlags();
 
+    // Get the raw data from m_cells for drawing and rendering
+    const uint32_t* getCellData() const { return m_cells.data(); }
 
 private:
     int m_width{}, m_height{};
     std::vector<uint32_t> m_cells{};
 
-    // Internal helper function
+    // Internal helper function to get the index of a cell
     int getIndex(int x, int y) const { return x + y * m_width; }
 };

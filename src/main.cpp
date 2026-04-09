@@ -2,13 +2,21 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+// --- Constants ---
+// display dimensions
+constexpr int SCREEN_HEIGHT { 1000 };
+constexpr int SCREEN_WIDTH { 800 };
+// grid dimensions
+constexpr int GRID_HEIGHT { 800 };
+constexpr int GRID_WIDTH { 600 };
+
 // Forward declare callback functions
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-
-// Set display dimensions
-constexpr int SCREEN_HEIGHT { 800 };
-constexpr int SCREEN_WIDTH { 600 };
+// Cursor declarations
+double g_mouseX { 0.0 }, g_mouseY { 0.0 };
+void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 
 int main()
 {
@@ -28,7 +36,7 @@ int main()
 
     glfwMakeContextCurrent(window);
 
-    // ----- Load all OpenGL function pointers -----
+    // --- Load all OpenGL function pointers ---
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -40,6 +48,8 @@ int main()
     // Set callback functions
     glfwSetKeyCallback(window, key_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     glViewport(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
     //NOTE: Add glEnable(GL_BLEND) and blendFunc here if needed
@@ -58,6 +68,7 @@ int main()
     return 0;
 }
 
+// --- Callback functions ---
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS ||
@@ -68,3 +79,21 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     glViewport(0,0, width, height);
 }
+
+void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
+{
+    g_mouseX = xpos;
+    g_mouseY = ypos;
+}
+
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        // Convert screen to coords to grid coords
+        int gridX { (int) (g_mouseX / SCREEN_WIDTH * GRID_WIDTH) };
+        int gridY { (int) (g_mouseY / SCREEN_HEIGHT * GRID_HEIGHT) };
+        // TODO: add selected particle here
+        std::cout << "Cursor position = (" << gridX << ", " << gridY << ")\n";
+    }
+}
+

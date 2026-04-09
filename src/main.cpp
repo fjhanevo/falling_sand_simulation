@@ -13,10 +13,13 @@ constexpr int GRID_WIDTH { 600 };
 // Forward declare callback functions
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-// Cursor declarations
-double g_mouseX { 0.0 }, g_mouseY { 0.0 };
 void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
+void mouse_callback(GLFWwindow *window, int button, int action, int mods);
+
+// Cursor declarations
+double g_mouseX { 0.0 }, g_mouseY { 0.0 };
+bool l_mouse_button = false;
 
 int main()
 {
@@ -62,6 +65,12 @@ int main()
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+        if (l_mouse_button) {
+            int gridX { (int) (g_mouseX / SCREEN_WIDTH * GRID_WIDTH) };
+            int gridY { (int) (g_mouseY / SCREEN_HEIGHT * GRID_HEIGHT) };
+            //TODO: replace below with particle adding function
+            std::cout << "Cursor position = (" << gridX << ", " << gridY << ")\n";
+        }
     }
     glfwTerminate();
 
@@ -88,12 +97,9 @@ void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
 
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        // Convert screen to coords to grid coords
-        int gridX { (int) (g_mouseX / SCREEN_WIDTH * GRID_WIDTH) };
-        int gridY { (int) (g_mouseY / SCREEN_HEIGHT * GRID_HEIGHT) };
-        // TODO: add selected particle here
-        std::cout << "Cursor position = (" << gridX << ", " << gridY << ")\n";
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if (action == GLFW_PRESS) l_mouse_button = true;
+        else if (action == GLFW_RELEASE) l_mouse_button = false;
     }
+    
 }
-

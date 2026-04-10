@@ -34,6 +34,14 @@ Check if the cell is updated using the AND operator
     return (m_cells[getIndex(x, y)] & UPDATE_FLAG);
 }
 
+bool Grid::isEmpty(int x, int y) const
+/*
+Check if the cell is empty
+*/
+{
+    return inBounds(x, y) && (m_cells[getIndex(x, y) == EMPTY]);
+}
+
 void Grid::setUpdated(int x, int y, bool value)
 /* 
 Toggles the updated status for a cell
@@ -46,7 +54,7 @@ Toggles the updated status for a cell
     }
     else 
     {
-        // Only turn off the update swtich (bit 8)
+        // Only turn off the update swtich (bit #8)
         m_cells[getIndex(x, y)] &= ~UPDATE_FLAG;    
     }
 }
@@ -71,4 +79,17 @@ Resets the update flag for each cell (sets the 8th bit to 0)
 {
     for (uint32_t& cell : m_cells)
         cell &= ~UPDATE_FLAG;
+}
+
+void Grid::update()
+{
+    // Reset update flags
+    this->resetUpdateFlags();
+    // Loop through the grid in a bottom-up manner
+    for (int y { m_height - 1}; y >= 0; y--) {
+        for (int x { 0 }; x < m_width; x++) {
+            //TODO: Add particle logic
+
+        }
+    }
 }

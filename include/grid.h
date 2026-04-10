@@ -14,22 +14,26 @@ enum Particle : uint8_t
 // ----- Bit Masks -----
 constexpr uint32_t TYPE_MASK    { 0xFF };      // Hex for 255
 constexpr uint32_t UPDATE_FLAG  { (1 << 8) };  // Shift left 8 times
+// legg til bit masks for Fire og velocity
 
 class Grid
 {
 public:
     // Constructor 
     Grid(int width, int height);
+    //TODO: Add destructor?
 
     // ----- Member functions -----
     Particle getType(int x, int y) const;
     void setType(int x, int y, Particle type);
 
     bool isUpdated(int x, int y) const;
+    bool isEmpty(int x, int y) const;
     void setUpdated(int x, int y, bool value);
 
     void move(int fromX, int fromY, int toX, int toY);
     void resetUpdateFlags();
+    void update();
 
     // Get the raw data from m_cells for drawing and rendering
     const uint32_t* getCellData() const { return m_cells.data(); }
@@ -40,4 +44,5 @@ private:
 
     // Internal helper function to get the index of a cell
     int getIndex(int x, int y) const { return x + y * m_width; }
+    bool inBounds(int x, int y) const { return x >= 0 && x < m_width && y >= 0 && y < m_height; }
 };

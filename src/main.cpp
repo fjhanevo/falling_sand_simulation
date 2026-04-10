@@ -21,6 +21,9 @@ void mouse_callback(GLFWwindow *window, int button, int action, int mods);
 double g_mouseX { 0.0 }, g_mouseY { 0.0 };
 bool l_mouse_button = false;
 
+// State for pausing/resuming
+enum State { ACTIVE, PAUSED };
+
 int main()
 {
     // Initialize window

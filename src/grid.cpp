@@ -1,4 +1,5 @@
 #include "grid.h"
+#include "particle_registry.h"
 
 Grid::Grid(int width, int height)
     : m_width(width), m_height(height)
@@ -39,7 +40,7 @@ bool Grid::isEmpty(int x, int y) const
 Check if the cell is empty
 */
 {
-    return inBounds(x, y) && (m_cells[getIndex(x, y) == EMPTY]);
+    return inBounds(x, y) && (m_cells[getIndex(x, y)] == EMPTY);
 }
 
 void Grid::setUpdated(int x, int y, bool value)
@@ -59,7 +60,7 @@ Toggles the updated status for a cell
     }
 }
 
-void Grid::move(int fromX, int fromY, int toX, int toY)
+void Grid::move(int toX, int toY, int fromX, int fromY)
 /* 
 Moves a given cell to a new position. Marks the old position as EMPTY
 */
@@ -88,8 +89,7 @@ void Grid::update()
     // Loop through the grid in a bottom-up manner
     for (int y { m_height - 1}; y >= 0; y--) {
         for (int x { 0 }; x < m_width; x++) {
-            //TODO: Add particle logic
-
+            updateParticle(*this, x, y);
         }
     }
 }

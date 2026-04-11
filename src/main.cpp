@@ -2,38 +2,25 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-// --- Constants ---
-// display dimensions
-constexpr int SCREEN_HEIGHT { 1000 };
-constexpr int SCREEN_WIDTH { 800 };
-// grid dimensions
-constexpr int GRID_HEIGHT { 800 };
-constexpr int GRID_WIDTH { 600 };
+#include "constants.h"
+#include "simulation.h"
 
 // Forward declare callback functions
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
-void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
-void mouse_callback(GLFWwindow *window, int button, int action, int mods);
-
-// Cursor declarations
-double g_mouseX { 0.0 }, g_mouseY { 0.0 };
-bool l_mouse_button = false;
-
-// State for pausing/resuming
-enum State { ACTIVE, PAUSED };
+static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
+static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
+static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 
 int main()
 {
-    // Initialize window
+    // --- Initialize window ---
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 
-    // Create the window
+    // --- Create the window ---
     GLFWwindow *window {glfwCreateWindow(
         SCREEN_WIDTH, 
         SCREEN_HEIGHT,
@@ -50,8 +37,11 @@ int main()
     }
 
     //TODO: Create a Game object here
+    Simulation sim { SCREEN_WIDTH, SCREEN_HEIGHT };
+    glfwSetWindowUserPointer(window, &sim);
 
-    // Set callback functions
+
+    // --- Set callback functions ---
     glfwSetKeyCallback(window, key_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
@@ -60,7 +50,7 @@ int main()
     glViewport(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
     //NOTE: Add glEnable(GL_BLEND) and blendFunc here if needed
 
-    // ----- Main render loop -----
+    // --- Main render loop ---
     while (!glfwWindowShouldClose(window))
     {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -68,12 +58,7 @@ int main()
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-        if (l_mouse_button) {
-            int gridX { (int) (g_mouseX / SCREEN_WIDTH * GRID_WIDTH) };
-            int gridY { (int) (g_mouseY / SCREEN_HEIGHT * GRID_HEIGHT) };
-            //TODO: replace below with particle adding function
-            std::cout << "Cursor position = (" << gridX << ", " << gridY << ")\n";
-        }
+        sim.processInput();
     }
     glfwTerminate();
 
@@ -81,28 +66,38 @@ int main()
 }
 
 // --- Callback functions ---
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
+static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS ||
         key == GLFW_KEY_Q && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
-void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+static void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
-    glViewport(0,0, width, height);
-}
-
-void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
-{
-    g_mouseX = xpos;
-    g_mouseY = ypos;
-}
-
-void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
-{
-    if (button == GLFW_MOUSE_BUTTON_LEFT) {
-        if (action == GLFW_PRESS) l_mouse_button = true;
-        else if (action == GLFW_RELEASE) l_mouse_button = false;
+    // Get the Simulation instance
+    Simulation *sim { static_cast<Simulation*>(glfwGetWindowUserPointer(window)) };
+    if (sim) {
+        sim->setWidth(width);
+        sim->setHeight(height);
+        glViewport(0,0, width, height);
     }
-    
+
+}
+
+static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
+{
+    // Get the Simulation instance
+    Simulation *sim { static_cast<Simulation*>(glfwGetWindowUserPointer(window)) };
+    sim->m_mouseX = xpos;
+    sim->m_mouseY = ypos;
+}
+
+static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
+{
+    // Get the Simulation instance
+    Simulation *sim { static_cast<Simulation*>(glfwGetWindowUserPointer(window)) };
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if (action == GLFW_PRESS) sim->m_mouse_btn_left = true;
+        else if (action == GLFW_RELEASE) sim->m_mouse_btn_left = false;
+    }
 }

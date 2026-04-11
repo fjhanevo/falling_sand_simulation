@@ -8,12 +8,13 @@ project(falling_sand_simulation)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 
-
 add_executable(falling_sand_simulation
     src/main.cpp
     src/grid.cpp
     src/simulation.cpp
+    src/particle_registry.cpp
     src/external/glad.c
+    src/external/renderer.cpp
 )
 
 target_include_directories(falling_sand_simulation PRIVATE

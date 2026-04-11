@@ -1,15 +1,8 @@
+// grid.h
 #pragma once
 #include <cstdint>
 #include <vector>
-// Explicitly use 8 bits
-// Can add up to 255 Particles
-enum Particle : uint8_t
-{
-    EMPTY = 0,              // 00000000
-    SAND,                   // 00000001
-    WATER,                  // 00000010
-    FIRE,                   // 00000011
-};
+#include "particle.h"
 
 // ----- Bit Masks -----
 constexpr uint32_t TYPE_MASK    { 0xFF };      // Hex for 255
@@ -21,7 +14,6 @@ class Grid
 public:
     // Constructor 
     Grid(int width, int height);
-    //TODO: Add destructor?
 
     // ----- Member functions -----
     Particle getType(int x, int y) const;

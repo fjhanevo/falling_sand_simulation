@@ -1,3 +1,4 @@
+// constants.h
 #pragma once
 // --- Constants ---
 // Display dimensions

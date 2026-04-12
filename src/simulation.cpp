@@ -13,8 +13,15 @@ void Simulation::processInput()
         if (m_mouseX < GRID_PIXEL_W && m_mouseY < GRID_PIXEL_H) {
             int gridX { (int) (m_mouseX / CELL_SIZE) };
             int gridY { (int) (m_mouseY / CELL_SIZE) };
-            std::cout << "Cursor position = (" << gridX << ", " << gridY << ")\n";
+            m_grid.setType(gridX, gridY, m_selectedParticle);
+            std::cout << gridX << ", " << gridY << '\n';
+
         }
         // TODO: Add else option for UI click
     }
+}
+
+void Simulation::render()
+{
+    m_renderer.drawGrid(m_grid);
 }

@@ -1,5 +1,6 @@
 #include "renderer.h"
 #include "constants.h"
+#include "config.h"
 #include "particle.h"
 #include "particle_registry.h"
 #include "grid.h"
@@ -8,12 +9,19 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
+#include <filesystem>
+
+static std::filesystem::path getPath(std::string_view relPath)
+{
+    return std::filesystem::path(RESOURCE_DIR) / relPath;
+}
 
 Renderer::Renderer(int gridW, int gridH)
     : m_gridW(gridW), m_gridH(gridH),
       m_pixelBuffer(gridW * gridH * 3) // 3 for RGB
 {
-    buildQuad();
+    buildQuad(gridW, gridH);
     buildShader();
 
     glGenTextures(1, &m_texture);
@@ -22,6 +30,14 @@ Renderer::Renderer(int gridW, int gridH)
                  0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+}
+
+Renderer::~Renderer()
+{
+    glDeleteVertexArrays(1, &m_vao);
+    glDeleteBuffers(1, &m_vbo);
+    glDeleteTextures(1, &m_texture);
+    glDeleteProgram(m_shaderProgram);
 }
 
 void Renderer::drawGrid(const Grid& grid)
@@ -40,8 +56,8 @@ void Renderer::drawGrid(const Grid& grid)
 
     // upload textures to the GPU
     glBindTexture(GL_TEXTURE_2D, m_texture);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, GL_RGB8, m_gridW, m_gridH,
-                 0, GL_RGB, GL_UNSIGNED_BYTE, m_pixelBuffer.data());
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_gridW, m_gridH,
+                GL_RGB, GL_UNSIGNED_BYTE, m_pixelBuffer.data());
 
     // draw fullscreen quad
     glUseProgram(m_shaderProgram);
@@ -49,21 +65,32 @@ void Renderer::drawGrid(const Grid& grid)
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Renderer::buildQuad()
+void Renderer::buildQuad(int winWidth, int winHeight)
 {
-    float xMax { 1.0f - (float)RIGHT_PANEL_PX  / (SCREEN_WIDTH  / 2.0f) };
-    float yMin{ 1.0f - (float)BOTTOM_PANEL_PX / (SCREEN_HEIGHT / 2.0f) };
+    float xOffset { (2.0f * RIGHT_PANEL_PX) / (float)winWidth };
+    float yOffset { (2.0f * BOTTOM_PANEL_PX) / (float)winHeight};
+
+    float xMax {  1.0f - xOffset };
+    float yMin { -1.0f + yOffset }; 
 
     float vertices[] = {
-            // position     //tex coords
-            -1.0f, 1.0f,      0.0f, 1.0f,    // top left
-            -1.0f, yMin,      0.0f, 0.0f,    // bottom left
-             xMax, yMin,      1.0f, 0.0f,    // bottom right
+            // position       //tex coords
+            -1.0f, 1.0f,      0.0f, 0.0f,    // top left
+            -1.0f, yMin,      0.0f, 1.0f,    // bottom left
+             xMax, yMin,      1.0f, 1.0f,    // bottom right
 
-            -1.0f, 1.0f,      0.0f, 1.0f,    // top left
+            -1.0f, 1.0f,      0.0f, 0.0f,    // top left
              xMax, yMin,      1.0f, 1.0f,    // bottom right
              xMax, 1.0f,      1.0f, 0.0f     // top right
         };
+
+    // float vertices[] = {
+    //     // Posisjon (x, y)          // Tekstur-koords (u, v)
+    //     -1.0f,  1.0f,               0.0f, 0.0f, // Topp venstre
+    //      xMax,  1.0f,               1.0f, 0.0f, // Topp høyre
+    //      xMax,  yMin,               1.0f, 1.0f, // Bunn høyre
+    //     -1.0f,  yMin,               0.0f, 1.0f  // Bunn venstre
+    // };
 
     glGenVertexArrays(1, &m_vao);
     glGenBuffers(1, &m_vbo);
@@ -95,21 +122,23 @@ void Renderer::buildShader()
         return ss.str();
     };
 
-    std::string vertSrc = readFile("res/particles.vert");
-    std::string fragSrc = readFile("res/particles.frag");
+    std::string vertSrc = readFile(getPath("particle.vert"));
+    std::string fragSrc = readFile(getPath("particle.frag"));
 
-    const char* vSrcPtr = vertSrc.c_str();
-    const char* fSrcPtr = fragSrc.c_str();
+    const char* vSrcPtr { vertSrc.c_str() };
+    const char* fSrcPtr { fragSrc.c_str() };
+    const GLint vSrcLen { static_cast<GLint>(vertSrc.length())};
+    const GLint fSrcLen { static_cast<GLint>(fragSrc.length())};
 
     // compile vertex shaders
     GLuint vert { glCreateShader(GL_VERTEX_SHADER) };
-    glShaderSource(vert, 1, &vSrcPtr, nullptr);
+    glShaderSource(vert, 1, &vSrcPtr, &vSrcLen);
     glCompileShader(vert);
     checkCompileErrors(vert, "VERTEX");
 
     // compile fragment shader
     GLuint frag { glCreateShader(GL_FRAGMENT_SHADER) };
-    glShaderSource(frag, 1, &fSrcPtr, nullptr);
+    glShaderSource(frag, 1, &fSrcPtr, &fSrcLen);
     glCompileShader(frag);
     checkCompileErrors(frag, "FRAGMENT");
 
@@ -120,9 +149,9 @@ void Renderer::buildShader()
     glLinkProgram(m_shaderProgram);
     checkCompileErrors(m_shaderProgram, "PROGRAM");
 
+    // delete when linking is done
     glDeleteShader(vert);
     glDeleteShader(frag);
-    
 }
 
 void Renderer::checkCompileErrors(GLuint shader, const std::string &type)

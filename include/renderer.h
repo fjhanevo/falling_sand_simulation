@@ -13,6 +13,7 @@ public:
     ~Renderer();
 
     void drawGrid(const Grid& grid);
+    void buildQuad(int winWidth, int winHeight);
 
 private:
     int m_gridW, m_gridH;
@@ -23,7 +24,6 @@ private:
 
     std::vector<uint8_t> m_pixelBuffer;
 
-    void buildQuad();
     void buildShader();
     void checkCompileErrors(GLuint shader, const std::string& type);
 };

@@ -1,0 +1,2 @@
+#pragma once
+#define RESOURCE_DIR "@CMAKE_SOURCE_DIR@/res/"

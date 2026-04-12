@@ -23,7 +23,10 @@ public:
     bool isEmpty(int x, int y) const;
     void setUpdated(int x, int y, bool value);
 
-    void move(int fromX, int fromY, int toX, int toY);
+    Particle getParticle() const { return m_particle; }
+    void setParticle(Particle type) { m_particle = type; }
+
+    void move(int toX, int toY, int fromX, int fromY);
     void resetUpdateFlags();
     void update();
 
@@ -32,6 +35,7 @@ public:
 
 private:
     int m_width{}, m_height{};
+    Particle m_particle { SAND };
     std::vector<uint32_t> m_cells{};
 
     // Internal helper function to get the index of a cell

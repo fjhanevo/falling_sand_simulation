@@ -50,15 +50,27 @@ int main()
     glViewport(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
     //NOTE: Add glEnable(GL_BLEND) and blendFunc here if needed
 
+    int fbWidth, fbHeight, winWidth, winHeight;
+    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+    glfwGetWindowSize(window, &winWidth, &winHeight);
+
+    std::cout << "Framebuffer: " << fbWidth << ", " <<  fbHeight << '\n';
+    std::cout << "Window : " << winWidth << ", " <<  winHeight<< '\n';
+
+
     // --- Main render loop ---
     while (!glfwWindowShouldClose(window))
     {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glfwSwapBuffers(window);
+        // Process input
         glfwPollEvents();
         sim.processInput();
+
+        // Render
+        sim.render();
+        glfwSwapBuffers(window);
     }
     glfwTerminate();
 
@@ -79,6 +91,7 @@ static void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     if (sim) {
         sim->setWidth(width);
         sim->setHeight(height);
+        sim->getRenderer().buildQuad(width, height);
         glViewport(0,0, width, height);
     }
 

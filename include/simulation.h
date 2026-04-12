@@ -19,6 +19,7 @@ public:
     int getHeight() const { return m_height; }
     State getState() const { return m_state; }
     Particle getSelectedParticle() const { return m_selectedParticle; }
+    Renderer &getRenderer() { return m_renderer; }
 
     void setWidth(int width) { m_width = width; }
     void setHeight(int height) { m_height = height; }

@@ -3,6 +3,7 @@
 
 #include "grid.h"
 #include "constants.h"
+#include "renderer.h"
 #include <GLFW/glfw3.h>
 
 enum State { ACTIVE, PAUSED };
@@ -17,9 +18,13 @@ public:
     int getWidth() const { return m_width; }
     int getHeight() const { return m_height; }
     State getState() const { return m_state; }
-    void setState(State state) { m_state = state; }
+    Particle getSelectedParticle() const { return m_selectedParticle; }
+
     void setWidth(int width) { m_width = width; }
     void setHeight(int height) { m_height = height; }
+    void setState(State state) { m_state = state; }
+    void setSelectedParticle(Particle type) { m_selectedParticle = type; }
+
 
     // --- Simulation functions ---
     void processInput();
@@ -35,7 +40,9 @@ public:
 private:
     int m_width{};
     int m_height{};
+    Particle m_selectedParticle { SAND };
     State m_state{ ACTIVE };
     Grid m_grid{ GRID_WIDTH, GRID_HEIGHT };
+    Renderer m_renderer { GRID_WIDTH, GRID_HEIGHT };
     //TODO: add UI element
 };

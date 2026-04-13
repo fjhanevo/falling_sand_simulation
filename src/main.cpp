@@ -47,7 +47,8 @@ int main()
     glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     glViewport(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    //NOTE: Add glEnable(GL_BLEND) and blendFunc here if needed
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // --- Delta time ---
     float deltaTime { 0.0f };
@@ -82,20 +83,35 @@ int main()
 // --- Callback functions ---
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS ||
-        key == GLFW_KEY_Q && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+    // Get the Simulation instance
+    Simulation *sim { static_cast<Simulation*>(glfwGetWindowUserPointer(window)) };
+    if (!sim) return;
+    
+    if (action == GLFW_PRESS) {
+        switch (key) { 
+            case GLFW_KEY_ESCAPE: 
+            case GLFW_KEY_Q:
+                glfwSetWindowShouldClose(window, true);
+                break;
+            case GLFW_KEY_1:
+                sim->setSelectedParticle(SAND);
+                break;
+            case GLFW_KEY_2:
+                sim->setSelectedParticle(WATER);
+                break;
+        }
+    }
+    
 }
 static void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     // Get the Simulation instance
     Simulation *sim { static_cast<Simulation*>(glfwGetWindowUserPointer(window)) };
-    if (sim) {
-        sim->setWidth(width);
-        sim->setHeight(height);
-        sim->getRenderer().buildQuad(width, height);
-        glViewport(0,0, width, height);
-    }
+    if (!sim) return;
+    sim->setWidth(width);
+    sim->setHeight(height);
+    sim->getRenderer().buildQuad(width, height);
+    glViewport(0,0, width, height);
 
 }
 
@@ -103,6 +119,7 @@ static void cursor_position_callback(GLFWwindow *window, double xpos, double ypo
 {
     // Get the Simulation instance
     Simulation *sim { static_cast<Simulation*>(glfwGetWindowUserPointer(window)) };
+    if (!sim) return;
     sim->m_mouseX = xpos;
     sim->m_mouseY = ypos;
 }
@@ -111,6 +128,7 @@ static void mouse_button_callback(GLFWwindow *window, int button, int action, in
 {
     // Get the Simulation instance
     Simulation *sim { static_cast<Simulation*>(glfwGetWindowUserPointer(window)) };
+    if (!sim) return;
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
         if (action == GLFW_PRESS) sim->m_mouse_btn_left = true;
         else if (action == GLFW_RELEASE) sim->m_mouse_btn_left = false;

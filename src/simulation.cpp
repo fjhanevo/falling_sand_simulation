@@ -1,5 +1,6 @@
 #include "simulation.h"
 #include "constants.h"
+#include <GLFW/glfw3.h>
 
 constexpr float MOVE_INTERVAL { 0.006f };
 

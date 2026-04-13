@@ -1,12 +1,14 @@
 #include "particle_registry.h"
 #include "grid.h"
+#include "particle.h"
+#include "sand.h"
 #include <array>
 
 using UpdateFn = void(*)(Grid&, int, int);
 
 static const UpdateFn s_updateTable[] = {
-    nullptr,
-    //NOTE: Add particles here
+    nullptr,        // EMPTY
+    updateSand,     // SAND
 
 };
 
@@ -21,7 +23,7 @@ void updateParticle(Grid &grid, int x, int y)
 static const uint8_t s_colorTable[][3] = {
 //     R    G    B
     {  0,   0,   0  },  // EMPTY
-    { 194, 178, 128 },  // SAND
+    { 200, 178, 128 },  // SAND
 
 };
 

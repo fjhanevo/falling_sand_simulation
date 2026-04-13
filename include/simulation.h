@@ -29,7 +29,7 @@ public:
 
     // --- Simulation functions ---
     void processInput();
-    void update();
+    void update(float dt);
     void render();
 
     // --- Public member variables ---
@@ -41,6 +41,7 @@ public:
 private:
     int m_width{};
     int m_height{};
+    float m_moveTimer {};
     Particle m_selectedParticle { SAND };
     State m_state{ ACTIVE };
     Grid m_grid{ GRID_WIDTH, GRID_HEIGHT };

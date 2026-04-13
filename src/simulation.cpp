@@ -1,8 +1,10 @@
 #include "simulation.h"
 #include "constants.h"
 
+constexpr float MOVE_INTERVAL { 0.006f };
+
 Simulation::Simulation(int width, int height)
-    : m_width(width), m_height(height)
+    : m_width(width), m_height(height), m_moveTimer(0.0f)
 {}
 
 void Simulation::processInput()
@@ -22,13 +24,22 @@ void Simulation::processInput()
 
             m_grid.setType(gridX, gridY, m_selectedParticle);
         }
-        // if (m_mouseX < GRID_PIXEL_W && m_mouseY < GRID_PIXEL_H) {
-        //     int gridX { (int) (m_mouseX / CELL_SIZE) };
-        //     int gridY { (int) (m_mouseY / CELL_SIZE) };
-        //     m_grid.setType(gridX, gridY, m_selectedParticle);
-        //
-        // }
         // TODO: Add else option for UI click
+    }
+}
+
+void Simulation::update(float dt)
+{
+    if (m_state == ACTIVE) {
+        // increment the moveTimer
+        m_moveTimer += dt;    
+        
+        // check if enough time has passed
+        if (m_moveTimer >= MOVE_INTERVAL) {
+            // update the grid and reset the moveTimer
+            m_grid.update();
+            m_moveTimer = 0.0f;
+        }
     }
 }
 

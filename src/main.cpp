@@ -36,7 +36,6 @@ int main()
         return -1;
     }
 
-    //TODO: Create a Game object here
     Simulation sim { SCREEN_WIDTH, SCREEN_HEIGHT };
     glfwSetWindowUserPointer(window, &sim);
 
@@ -50,25 +49,28 @@ int main()
     glViewport(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
     //NOTE: Add glEnable(GL_BLEND) and blendFunc here if needed
 
-    int fbWidth, fbHeight, winWidth, winHeight;
-    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
-    glfwGetWindowSize(window, &winWidth, &winHeight);
-
-    std::cout << "Framebuffer: " << fbWidth << ", " <<  fbHeight << '\n';
-    std::cout << "Window : " << winWidth << ", " <<  winHeight<< '\n';
-
+    // --- Delta time ---
+    float deltaTime { 0.0f };
+    float lastFrame { 0.0f };
 
     // --- Main render loop ---
     while (!glfwWindowShouldClose(window))
     {
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        // Calculate deltaTime
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
         // Process input
         glfwPollEvents();
         sim.processInput();
 
+        // Update the Simulation
+        sim.update(deltaTime);
+
         // Render
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
         sim.render();
         glfwSwapBuffers(window);
     }

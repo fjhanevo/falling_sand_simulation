@@ -19,6 +19,7 @@ add_executable(falling_sand_simulation
     src/simulation.cpp
     src/particle_registry.cpp
     src/particles/sand.cpp
+    src/particles/water.cpp
     src/external/renderer.cpp
     src/external/glad.c
 )

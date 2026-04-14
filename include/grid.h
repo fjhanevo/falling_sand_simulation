@@ -4,10 +4,17 @@
 #include <vector>
 #include "particle.h"
 
-// ----- Bit Masks -----
+// --- Bit Masks ---
 constexpr uint32_t TYPE_MASK    { 0xFF };      // Hex for 255
-constexpr uint32_t UPDATE_FLAG  { (1 << 8) };  // Shift left 8 times
-// legg til bit masks for Fire og velocity
+// Flags
+constexpr uint32_t UPDATE_FLAG  { 1 << 8 };    // Flip the 8th bit 
+constexpr uint32_t FLAMMABLE    { 1 << 9 };    // Flip the 9th bit 
+// Velocity
+constexpr uint32_t VEL_X_MASK   { 0x3F000 };   // Bits 12-17
+constexpr uint32_t VEL_Y_MASK   { 0xFC0000 };  // Bits 18-23
+constexpr int      VEL_X_SHIFT  { 12 };
+constexpr int      VEL_Y_SHIFT  { 18 };
+constexpr int      VEL_BIAS     { 31 };        // Default velocity (0)
 
 class Grid
 {
@@ -15,29 +22,33 @@ public:
     // Constructor 
     Grid(int width, int height);
 
-    // ----- Member functions -----
+    // --- Member functions ---
+    // Particle getter/setter
     Particle getType(int x, int y) const;
     void setType(int x, int y, Particle type);
 
+    // Flag functions
     bool isUpdated(int x, int y) const;
-    bool isEmpty(int x, int y) const;
+    bool isFlammable(int x, int y) const;
     void setUpdated(int x, int y, bool value);
+    void setFlammable(int x, int y, bool value);
 
-    Particle getParticle() const { return m_particle; }
-    void setParticle(Particle type) { m_particle = type; }
+    // Velocity functions
+    int getVelX(int x, int y) const;
+    int getVelY(int x, int y) const;
+    void setVelX(int x, int y, int vx);
+    void setVelY(int x, int y, int vx);
 
+    // Position/updating functions
     void move(int toX, int toY, int fromX, int fromY);
     void swap(int toX, int toY, int fromX, int fromY);
-    // void swap(int x1, int y1, int x2, int y2);
+    bool isEmpty(int x, int y) const;
     void resetUpdateFlags();
     void update();
 
-    // Get the raw data from m_cells for drawing and rendering
-    const uint32_t* getCellData() const { return m_cells.data(); }
 
 private:
     int m_width{}, m_height{};
-    Particle m_particle { SAND };
     std::vector<uint32_t> m_cells{};
 
     // Internal helper function to get the index of a cell

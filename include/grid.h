@@ -27,6 +27,8 @@ public:
     void setParticle(Particle type) { m_particle = type; }
 
     void move(int toX, int toY, int fromX, int fromY);
+    void swap(int toX, int toY, int fromX, int fromY);
+    // void swap(int x1, int y1, int x2, int y2);
     void resetUpdateFlags();
     void update();
 

@@ -1,5 +1,6 @@
 #include "grid.h"
 #include "particle_registry.h"
+#include <utility>
 
 Grid::Grid(int width, int height)
     : m_width(width), m_height(height)
@@ -13,6 +14,7 @@ Particle Grid::getType(int x, int y) const
 Get the Particle type at the current index in m_cells
 */
 {
+    if (!inBounds(x, y)) return EMPTY;
     return (Particle)(m_cells[getIndex(x,y)] & TYPE_MASK);
 }
 
@@ -55,7 +57,7 @@ Toggles the updated status for a cell
     }
     else 
     {
-        // Only turn off the update swtich (bit #8)
+        // Turn off the update swtich 
         m_cells[getIndex(x, y)] &= ~UPDATE_FLAG;    
     }
 }
@@ -71,6 +73,18 @@ Moves a given cell to a new position. Marks the old position as EMPTY
     m_cells[getIndex(toX, toY)] = cell;
     // Mark the old position as EMPTY
     m_cells[getIndex(fromX, fromY)] = EMPTY;
+    // Set the cell as updated
+    setUpdated(toX, toY, true);
+}
+
+void Grid::swap(int toX, int toY, int fromX, int fromY)
+/*
+Swap two cells and mark them as being updated
+*/
+{
+    std::swap(m_cells[getIndex(fromX,fromY)], m_cells[getIndex(toX, toY)]);
+    setUpdated(toX, toY, true);
+    setUpdated(fromX, fromY, true);
 }
 
 void Grid::resetUpdateFlags()

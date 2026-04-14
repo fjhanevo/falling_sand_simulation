@@ -26,7 +26,6 @@ public:
     void setState(State state) { m_state = state; }
     void setSelectedParticle(Particle type) { m_selectedParticle = type; }
 
-
     // --- Simulation functions ---
     void processInput();
     void update(float dt);
@@ -36,7 +35,6 @@ public:
     bool m_mouse_btn_left { false };
     int m_mouseX { 0 };
     int m_mouseY { 0 };
-    // TODO: maybe add keyboard variables
 
 private:
     int m_width{};

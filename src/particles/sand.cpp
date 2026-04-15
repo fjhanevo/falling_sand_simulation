@@ -1,26 +1,29 @@
 #include "sand.h"
+#include "grid.h"
 #include <random>
 
-constexpr int SAND_GRAVITY { 2 };   // Acceleration per frame
-constexpr int SAND_MAX_VEL { 6 };  // Max velocity
+constexpr int ACCELERATION { 1 };   // Acceleration per frame
+constexpr int MAX_VEL      { 60 };  // Max velocity (60 / 16 = 4 cells per frame)
 
 static std::mt19937 rng { std::random_device{}() };
 static std::uniform_int_distribution<int> directionDist{ 0, 1 };
 
-
 void updateSand(Grid& grid, int x, int y)
 {
+    // Get the velocity
     int vy { grid.getVelY(x, y) }; 
 
-    // apply gravity
-    vy = std::min(vy + SAND_GRAVITY, SAND_MAX_VEL);
+    // Increase the velocity with ACCELERATION
+    vy = std::min(vy + ACCELERATION, MAX_VEL);
+
+    // Calculate how many cells the Sand should move this frame
+    int steps {vy >> VEL_PRECISION_SHIFT };
 
     // Sub-step by trying to move vy cells downward
     int curX { x };
     int curY { y };
 
-    int direction { directionDist(rng) ? 1 : -1 };
-    for (int step { 0 }; step < vy; ++step) {
+    for (int step { 0 }; step < std::max(1, steps); ++step) {
         // Fall down
         if (grid.isEmpty(curX, curY + 1)) {
             grid.move(curX, curY + 1, curX, curY);
@@ -33,6 +36,7 @@ void updateSand(Grid& grid, int x, int y)
         }
         // check diagonally if blocked below
         else if (step == 0) {
+            int direction { directionDist(rng) ? 1 : -1 };
             if (grid.isEmpty(curX + direction, curY + 1)) {
                 grid.move(curX + direction, curY + 1, curX, curY);
                 curX += direction;

@@ -4,17 +4,19 @@
 #include <vector>
 #include "particle.h"
 
-// --- Bit Masks ---
-constexpr uint32_t TYPE_MASK    { 0xFF };      // Hex for 255
-// Flags
-constexpr uint32_t UPDATE_FLAG  { 1 << 8 };    // Flip the 8th bit 
-constexpr uint32_t FLAMMABLE    { 1 << 9 };    // Flip the 9th bit 
-// Velocity
-constexpr uint32_t VEL_X_MASK   { 0x3F000 };   // Bits 12-17
-constexpr uint32_t VEL_Y_MASK   { 0xFC0000 };  // Bits 18-23
-constexpr int      VEL_X_SHIFT  { 12 };
-constexpr int      VEL_Y_SHIFT  { 18 };
-constexpr int      VEL_BIAS     { 31 };        // Default velocity (0)
+// --- Particle and Flags ---
+constexpr uint32_t TYPE_MASK           { 0xFF };      // Hex for 255
+constexpr uint32_t UPDATE_FLAG         { 1 << 8 };    // Flip the 8th bit 
+constexpr uint32_t FLAMMABLE           { 1 << 9 };    // Flip the 9th bit 
+// --- Velocity X (Bit 16-23) ---
+constexpr uint32_t VEL_X_MASK          { 0xFF0000 };
+constexpr int      VEL_X_SHIFT         { 16 };
+// --- Velocity Y (Bit 24-31) ---
+constexpr uint32_t VEL_Y_MASK          { 0xFF000000 };
+constexpr int      VEL_Y_SHIFT         { 24 };
+// --- Velocity utils ---
+constexpr int      VEL_BIAS            { 128 };        // Default velocity (0)
+constexpr int      VEL_PRECISION_SHIFT { 4 };
 
 class Grid
 {

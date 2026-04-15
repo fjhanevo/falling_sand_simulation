@@ -73,32 +73,41 @@ void Grid::setFlammable(int x, int y, bool value)
 
 int Grid::getVelX(int x, int y) const 
 {
-    uint32_t cell { (m_cells[getIndex(x, y)] & VEL_X_MASK) >> VEL_X_SHIFT };
-    return (int)cell - VEL_BIAS;
+    if (!inBounds(x, y)) return 0;
+    // Get the cell
+    uint32_t cell { m_cells[getIndex(x, y)] };
+    // Get the byte and subtract the bias to get a number between -128 and 127
+    return (int)((cell & VEL_X_MASK) >> VEL_X_SHIFT) - VEL_BIAS;
 }
 
 int Grid::getVelY(int x, int y) const 
 {
-    uint32_t cell { (m_cells[getIndex(x, y)] & VEL_Y_MASK) >> VEL_Y_SHIFT };
-    return (int)cell - VEL_BIAS;
-}
+    if (!inBounds(x, y)) return 0;
+    // Get the cell
+    uint32_t cell { m_cells[getIndex(x, y)] };
+    // Get the byt and subtract the bias to get a number between -128 and 127
+    return (int)((cell & VEL_Y_MASK) >> VEL_Y_SHIFT) - VEL_BIAS;}
 
 void Grid::setVelX(int x, int y, int vx)
 {
-    // Clamp to a valid range before storing
-    vx = std::clamp(vx + VEL_BIAS, 0 , 63);
-    // Get the cell instance
-    uint32_t& cell { m_cells[getIndex(x, y)]} ;
-    cell = (cell & ~VEL_X_MASK) | ((uint32_t)vx << VEL_X_SHIFT);
+    if (!inBounds(x, y)) return;
+    // Clamp to a valid range before storing (-128 to 127)
+    uint32_t vel { (uint32_t)(std::clamp(vx, -128, 127) + VEL_BIAS) & 0xFF };
+    // Get the cell
+    uint32_t &cell { m_cells[getIndex(x, y)] };
+    // Clean the cell and apply the new velocity
+    cell = (cell & ~VEL_X_MASK) | (vel << VEL_X_SHIFT);
 }
 
 void Grid::setVelY(int x, int y, int vy)
 {
-    // Clamp to a valid range before storing
-    vy = std::clamp(vy + VEL_BIAS, 0 , 63);
-    // Get the cell instance
-    uint32_t& cell { m_cells[getIndex(x, y)]} ;
-    cell = (cell & ~VEL_Y_MASK) | ((uint32_t)vy << VEL_Y_SHIFT);
+    if (!inBounds(x, y)) return;
+    // Clamp to a valid range before storing (-128 to 127)
+    uint32_t vel { (uint32_t)(std::clamp(vy, -128, 127) + VEL_BIAS) & 0xFF };
+    // Get the cell
+    uint32_t &cell { m_cells[getIndex(x, y)] };
+    // Clean the cell and apply the new velocity
+    cell = (cell & ~VEL_Y_MASK) | (vel << VEL_Y_SHIFT);
 }
 
 void Grid::move(int toX, int toY, int fromX, int fromY)

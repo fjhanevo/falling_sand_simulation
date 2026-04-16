@@ -2,8 +2,10 @@
 #include "grid.h"
 #include <random>
 
-constexpr int ACCELERATION { 1 };   // Acceleration per frame
-constexpr int MAX_VEL      { 60 };  // Max velocity (60 / 16 = 4 cells per frame)
+// NOTE: Skip acceleration for now
+
+// constexpr int ACCELERATION { 1 };   // Acceleration per frame
+constexpr int MAX_VEL      { 64 };  // Max velocity (60 / 16 = 4 cells per frame)
 
 static std::mt19937 rng { std::random_device{}() };
 static std::uniform_int_distribution<int> directionDist{ 0, 1 };
@@ -14,7 +16,8 @@ void updateSand(Grid& grid, int x, int y)
     int vy { grid.getVelY(x, y) }; 
 
     // Increase the velocity with ACCELERATION
-    vy = std::min(vy + ACCELERATION, MAX_VEL);
+    // vy = std::min(vy + ACCELERATION, MAX_VEL);
+    vy = MAX_VEL;
 
     // Calculate how many cells the Sand should move this frame
     int steps {vy >> VEL_PRECISION_SHIFT };

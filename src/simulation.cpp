@@ -1,12 +1,16 @@
 #include "simulation.h"
 #include "constants.h"
 #include <GLFW/glfw3.h>
+#include <random>
+
+static std::mt19937 rng { std::random_device{}() };
 
 constexpr float MOVE_INTERVAL { 0.006f };
 
 Simulation::Simulation(int width, int height)
     : m_width(width), m_height(height), m_moveTimer(0.0f)
-{}
+{
+}
 
 void Simulation::processInput()
 {
@@ -23,9 +27,26 @@ void Simulation::processInput()
             int gridX { (int)(normX * GRID_WIDTH)  };
             int gridY { (int)(normY * GRID_HEIGHT) };
 
-            m_grid.setType(gridX, gridY, m_selectedParticle);
+            // Loop through the mouse radius
+            for (int dy { -m_brushSize }; dy <= m_brushSize; ++dy) {
+                for (int dx { -m_brushSize }; dx <= m_brushSize; ++dx) {
+                    // check if the coords are inside the circle
+                    if (dx * dx + dy * dy <= m_brushSize * m_brushSize) {
+                        int nx = gridX + dx;
+                        int ny = gridY + dy;
+                        // Check if the position is valid and the cell is empty
+                        if (m_grid.isEmpty(nx, ny)) {
+                            // Randomly spread the particles around the radius
+                            if (std::uniform_int_distribution<int> {0, 100}(rng) < 30 ) {
+                                m_grid.setType(nx, ny, m_selectedParticle);
+
+                            }
+                        }
+                    }
+                }
+            }
         }
-        // TODO: Add else option for UI click
+        // TODO: Add UI support  
     }
 }
 

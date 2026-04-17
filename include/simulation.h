@@ -3,6 +3,7 @@
 
 #include "grid.h"
 #include "constants.h"
+#include <algorithm>
 #include "renderer.h"
 #include <GLFW/glfw3.h>
 
@@ -31,14 +32,18 @@ public:
     void update(float dt);
     void render();
 
+    // --- Utility functions ---
+    void adjustBrushSize(double yOffset) { m_brushSize = std::clamp(m_brushSize + (int)yOffset, 1, 20); }
+
     // --- Public member variables ---
     bool m_mouse_btn_left { false };
     int m_mouseX { 0 };
     int m_mouseY { 0 };
 
 private:
-    int m_width{};
-    int m_height{};
+    int m_width {};
+    int m_height {};
+    int m_brushSize { 3 };
     float m_moveTimer {};
     Particle m_selectedParticle { SAND };
     State m_state{ ACTIVE };

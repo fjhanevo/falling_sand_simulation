@@ -10,6 +10,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
+static void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
 int main()
 {
@@ -45,6 +46,7 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetScrollCallback(window,scroll_callback);
 
     glViewport(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glEnable(GL_BLEND);
@@ -99,6 +101,9 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
             case GLFW_KEY_2:
                 sim->setSelectedParticle(WATER);
                 break;
+            case GLFW_KEY_3:
+                sim->setSelectedParticle(WOOD);
+                break;
         }
     }
     
@@ -133,4 +138,12 @@ static void mouse_button_callback(GLFWwindow *window, int button, int action, in
         if (action == GLFW_PRESS) sim->m_mouse_btn_left = true;
         else if (action == GLFW_RELEASE) sim->m_mouse_btn_left = false;
     }
+}
+
+static void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+{
+    // Get the Simulation instance
+    Simulation *sim { static_cast<Simulation*>(glfwGetWindowUserPointer(window)) };
+    if (!sim) return;
+    sim->adjustBrushSize(yoffset);
 }

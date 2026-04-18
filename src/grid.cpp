@@ -143,10 +143,10 @@ Swap two cells and mark them as being updated
 
 bool Grid::isEmpty(int x, int y) const
 /*
-Check if the cell is empty
+Check if the cell is empty or if it contains Smoke
 */
 {
-    return inBounds(x, y) && (m_cells[getIndex(x, y)] == EMPTY);
+    return inBounds(x, y) && ((m_cells[getIndex(x, y)] == EMPTY) || (m_cells[getIndex(x, y)] == SMOKE));
 }
 
 

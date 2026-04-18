@@ -35,8 +35,8 @@ void updateSand(Grid& grid, int x, int y)
             grid.move(curX, curY + 1, curX, curY);
             curY++;
         }
-        else if (grid.getType(curX, curY + 1) == WATER) {
-            // Swap sand and water
+        else if (auto below { grid.getType(curX, curY + 1) }; below == WATER || below == SMOKE) {
+            // Sink through lighter particles
             grid.swap(curX, curY + 1 , curX, curY);
             curY++;
         }

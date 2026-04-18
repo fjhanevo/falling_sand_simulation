@@ -44,6 +44,11 @@ void updateWater(Grid &grid, int x, int y)
             grid.move(curX, curY + 1, curX, curY);
             curY++;
         }
+        // Sink through smoke
+        else if (grid.getType(curX, curY + 1) == SMOKE) {
+            grid.swap(curX, curY + 1, curX, curY);
+            curY++;
+        }
         // check diagonally if blocked below
         else if (step == 0) {
             int direction { directionDist(rng) ? 1 : -1 };

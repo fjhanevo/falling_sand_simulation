@@ -36,10 +36,10 @@ public:
     void setFlammable(int x, int y, bool value);
 
     // Velocity functions
-    int getVelX(int x, int y) const;
-    int getVelY(int x, int y) const;
-    void setVelX(int x, int y, int vx);
-    void setVelY(int x, int y, int vx);
+    int getCellDataX(int x, int y) const;
+    int getCellDataY(int x, int y) const;
+    void setCellDataX(int x, int y, int val);
+    void setCellDataY(int x, int y, int val);
 
     // Position/updating functions
     void move(int toX, int toY, int fromX, int fromY);

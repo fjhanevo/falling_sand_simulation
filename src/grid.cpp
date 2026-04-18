@@ -71,42 +71,48 @@ void Grid::setFlammable(int x, int y, bool value)
     m_cells[getIndex(x, y)] |= FLAMMABLE;
 }
 
-int Grid::getVelX(int x, int y) const 
+int Grid::getCellDataX(int x, int y) const 
 {
     if (!inBounds(x, y)) return 0;
     // Get the cell
     uint32_t cell { m_cells[getIndex(x, y)] };
     // Get the byte and subtract the bias to get a number between -128 and 127
-    return (int)((cell & VEL_X_MASK) >> VEL_X_SHIFT) - VEL_BIAS;
+    return (int)((cell & VEL_X_MASK) >> VEL_X_SHIFT);
 }
 
-int Grid::getVelY(int x, int y) const 
+int Grid::getCellDataY(int x, int y) const 
 {
     if (!inBounds(x, y)) return 0;
     // Get the cell
     uint32_t cell { m_cells[getIndex(x, y)] };
-    // Get the byt and subtract the bias to get a number between -128 and 127
-    return (int)((cell & VEL_Y_MASK) >> VEL_Y_SHIFT) - VEL_BIAS;}
+    // Get the byte and subtract the bias to get a number between -128 and 127
+    return (int)((cell & VEL_Y_MASK) >> VEL_Y_SHIFT);}
 
-void Grid::setVelX(int x, int y, int vx)
+void Grid::setCellDataX(int x, int y, int val)
 {
+    // if (!inBounds(x, y)) return;
+    // // Get the cell
+    // uint32_t &cell { m_cells[getIndex(x, y)] };
+    // // Clean the cell and apply the new value 
+    // cell = (cell & ~VEL_X_MASK) | ((uint32_t)(val & 0xFF) << VEL_X_SHIFT);
+
     if (!inBounds(x, y)) return;
     // Clamp to a valid range before storing (-128 to 127)
-    uint32_t vel { (uint32_t)(std::clamp(vx, -128, 127) + VEL_BIAS) & 0xFF };
+    uint32_t vel { (uint32_t)(std::clamp(val, -128, 127) + VEL_BIAS) & 0xFF };
     // Get the cell
     uint32_t &cell { m_cells[getIndex(x, y)] };
     // Clean the cell and apply the new velocity
     cell = (cell & ~VEL_X_MASK) | (vel << VEL_X_SHIFT);
 }
 
-void Grid::setVelY(int x, int y, int vy)
+void Grid::setCellDataY(int x, int y, int val)
 {
     if (!inBounds(x, y)) return;
     // Clamp to a valid range before storing (-128 to 127)
-    uint32_t vel { (uint32_t)(std::clamp(vy, -128, 127) + VEL_BIAS) & 0xFF };
+    uint32_t vel { (uint32_t)(std::clamp(val, -128, 127) + VEL_BIAS) & 0xFF };
     // Get the cell
     uint32_t &cell { m_cells[getIndex(x, y)] };
-    // Clean the cell and apply the new velocity
+    // Clean the cell and apply the new value 
     cell = (cell & ~VEL_Y_MASK) | (vel << VEL_Y_SHIFT);
 }
 

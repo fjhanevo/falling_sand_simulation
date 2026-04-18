@@ -4,16 +4,19 @@
 
 // NOTE: Skip acceleration for now
 
-// constexpr int ACCELERATION { 1 };   // Acceleration per frame
-constexpr int MAX_VEL      { 64 };  // Max velocity (60 / 16 = 4 cells per frame)
+// constexpr int ACCELERATION { 2 };   // Acceleration per frame
+constexpr int MAX_VEL      { 120 };  
 
 static std::mt19937 rng { std::random_device{}() };
 static std::uniform_int_distribution<int> directionDist{ 0, 1 };
 
+inline int getVelY(Grid &g, int x, int y) { return g.getCellDataY(x, y) - 128; }
+inline void setVelY(Grid &g, int x, int y, int vy) { g.setCellDataY(x, y, vy); }
+
 void updateSand(Grid& grid, int x, int y)
 {
     // Get the velocity
-    int vy { grid.getVelY(x, y) }; 
+    int vy { getVelY(grid, x, y) }; 
 
     // Increase the velocity with ACCELERATION
     // vy = std::min(vy + ACCELERATION, MAX_VEL);
@@ -60,5 +63,5 @@ void updateSand(Grid& grid, int x, int y)
     } 
 
     // Write back the final velocity
-    grid.setVelY(curX, curY, vy);
+    setVelY(grid, curX, curY, vy);
 }

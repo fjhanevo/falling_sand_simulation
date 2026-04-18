@@ -20,6 +20,9 @@ add_executable(falling_sand_simulation
     src/particle_registry.cpp
     src/particles/sand.cpp
     src/particles/water.cpp
+    src/particles/wood.cpp
+    src/particles/fire.cpp
+    src/particles/smoke.cpp
     src/external/renderer.cpp
     src/external/glad.c
 )

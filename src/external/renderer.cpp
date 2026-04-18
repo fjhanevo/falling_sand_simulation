@@ -1,7 +1,6 @@
 #include "renderer.h"
 #include "constants.h"
 #include "config.h"
-#include "particle.h"
 #include "particle_registry.h"
 #include "grid.h"
 #include <iostream>
@@ -45,8 +44,7 @@ void Renderer::drawGrid(const Grid& grid)
     // fill pixel buffer from grid data
     for (int y { 0 }; y < m_gridH; ++y) {
         for (int x { 0 }; x < m_gridW; ++x) {
-            Particle type { grid.getType(x, y) };
-            auto [r, g, b] { getParticleColor(type) };
+            auto [r, g, b] { getParticleColor(grid, x, y) };
             int i { (x + y * m_gridW) * 3 };
             m_pixelBuffer[i]   = r;
             m_pixelBuffer[i+1] = g;

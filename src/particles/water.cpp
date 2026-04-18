@@ -6,17 +6,24 @@
 
 // constexpr int ACCELERATION { 1 };
 constexpr int MAX_VEL_Y    { 80 };
+constexpr int MAX_VEL_X    { 60 };
 constexpr int MIN_VEL_X    { 15 };
 constexpr int FRICTION     { 2 };
 
 static std::mt19937 rng { std::random_device{}() };
 static std::uniform_int_distribution<int> directionDist{ 0, 1 };
 
+inline int getVelX(Grid &g, int x, int y) { return g.getCellDataX(x, y) - 128; }
+inline int getVelY(Grid &g, int x, int y) { return g.getCellDataY(x, y) - 128; }
+
+inline void setVelX(Grid &g, int x, int y, int vx) { g.setCellDataX(x, y, vx); }
+inline void setVelY(Grid &g, int x, int y, int vy) { g.setCellDataY(x, y, vy); }
+
 void updateWater(Grid &grid, int x, int y)
 {
     // Get the velocity
-    int vy { grid.getVelY(x, y) }; 
-    int vx { grid.getVelX(x, y) }; 
+    int vy { getVelY(grid, x, y) }; 
+    int vx { getVelX(grid, x, y) }; 
 
     // Increase the velocity with ACCELERATION
     // vy = std::min(vy + ACCELERATION, MAX_VEL_Y);
@@ -82,10 +89,23 @@ void updateWater(Grid &grid, int x, int y)
         int dirX { vx > 0 ? 1 : -1 };
 
         for (int step { 0 }; step < std::max(1, stepsX); ++step) {
-            if (grid.isEmpty(curX + dirX, curY)) {
+            // Check if it can fall diagonally
+            if (grid.isEmpty(curX + dirX, curY + 1)) {
+                grid.move(curX + dirX, curY + 1, curX, curY);
+                curX += dirX;
+                curY++;
+            }
+            // Fall straight down if the diagonal is blocked
+            else if (grid.isEmpty(curX, curY + 1)) {
+                grid.move(curX, curY + 1, curX, curY);
+                curY++;
+            }
+            // Spread horizontally
+            else if (grid.isEmpty(curX + dirX, curY)) {
                 grid.move(curX + dirX, curY, curX, curY);
                 curX += dirX;
             }
+            
             else {
                 // Hit a wall or another particle: flip direction and apply friction.
                 vx = -vx / FRICTION;
@@ -96,6 +116,6 @@ void updateWater(Grid &grid, int x, int y)
     }
     
     // Write back the final velocity
-    grid.setVelY(curX, curY, vy);
-    grid.setVelX(curX, curY, vx);
+    setVelY(grid, curX, curY, vy);
+    setVelX(grid, curX, curY, vx);
 }

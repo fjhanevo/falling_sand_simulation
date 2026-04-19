@@ -99,6 +99,10 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
             case GLFW_KEY_Q:
                 glfwSetWindowShouldClose(window, true);
                 break;
+            case GLFW_KEY_SPACE:
+                if (sim->getState() == ACTIVE) sim->setState(PAUSED);
+                else sim->setState(ACTIVE);
+                break;
             case GLFW_KEY_0:
                 // For erasing particles
                 sim->setSelectedParticle(EMPTY);
@@ -121,8 +125,8 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 
         }
     }
-    
 }
+
 static void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     // Get the Simulation instance

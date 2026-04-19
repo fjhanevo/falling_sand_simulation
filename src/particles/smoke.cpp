@@ -13,20 +13,18 @@ static std::uniform_int_distribution<int> directionDist { 0, 1 };
 static std::uniform_int_distribution<int> velocityDist  { MIN_VEL, MAX_VEL };
 static std::uniform_int_distribution<int> lifetimeDist  { MIN_LIFETIME, MAX_LIFETIME };
 
-// Smoke reuses the Y-velocity byte (bits 24-31) as its lifetime counter.
-// setCellDataY applies +VEL_BIAS on write while getCellDataY returns the raw
-// byte, so writing (life - VEL_BIAS) lets getCellDataY read back `life`.
-inline int  getLifetime(const Grid& g, int x, int y)           { return g.getCellDataY(x, y); }
-inline void setLifetime(Grid& g, int x, int y, int life)       { g.setCellDataY(x, y, life - VEL_BIAS); }
+// Reuse the y-velocity bits as the lifetime counter
+inline int  getLifetime(const Grid &g, int x, int y)     { return g.getCellDataY(x, y); }
+inline void setLifetime(Grid &g, int x, int y, int life) { g.setCellDataY(x, y, life - VEL_BIAS); }
 
 // Use the Velocity x-bits for general velocty
 inline void setVel(Grid &g, int x, int y, int vx) { g.setCellDataX(x, y, vx); }
 
-int getSmokeLifetime(const Grid& grid, int x, int y) { return getLifetime(grid, x, y); }
+int getSmokeLifetime(const Grid &grid, int x, int y) { return getLifetime(grid, x, y); }
 
-void updateSmoke(Grid& grid, int x, int y)
+void updateSmoke(Grid &grid, int x, int y)
 {
-    // Lazy-init lifetime the first time a freshly placed smoke cell ticks
+    // Generate a lifetime for the particle if it doesn't have any
     int lifetime { getLifetime(grid, x, y) };
     if (lifetime == 0) {
         lifetime = lifetimeDist(rng);

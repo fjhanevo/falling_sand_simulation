@@ -105,7 +105,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
                 sim->setSelectedParticle(WOOD);
                 break;
             case GLFW_KEY_4:
-                sim->setSelectedParticle(SMOKE);
+                sim->setSelectedParticle(FIRE);
                 break;
         }
     }

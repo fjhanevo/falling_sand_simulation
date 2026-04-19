@@ -9,4 +9,5 @@ enum Particle : uint8_t
     WOOD,             // 00000011
     FIRE,             // 00000100
     SMOKE,            // 00000101
+    STONE,            // 00000110
 };

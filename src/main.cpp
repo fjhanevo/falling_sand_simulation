@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include "constants.h"
+#include "particle.h"
 #include "simulation.h"
 
 // Forward declare callback functions
@@ -95,6 +96,10 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
             case GLFW_KEY_Q:
                 glfwSetWindowShouldClose(window, true);
                 break;
+            case GLFW_KEY_0:
+                // For erasing particles
+                sim->setSelectedParticle(EMPTY);
+                break;
             case GLFW_KEY_1:
                 sim->setSelectedParticle(SAND);
                 break;
@@ -107,6 +112,10 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
             case GLFW_KEY_4:
                 sim->setSelectedParticle(FIRE);
                 break;
+            case GLFW_KEY_5:
+                sim->setSelectedParticle(STONE);
+                break;
+
         }
     }
     

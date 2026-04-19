@@ -1,5 +1,6 @@
 #include "simulation.h"
 #include "constants.h"
+#include "particle.h"
 #include <GLFW/glfw3.h>
 #include <random>
 
@@ -34,8 +35,12 @@ void Simulation::processInput()
                     if (dx * dx + dy * dy <= m_brushSize * m_brushSize) {
                         int nx = gridX + dx;
                         int ny = gridY + dy;
+                        // Check if the particle is EMPTY, then clear the cell
+                        if (m_selectedParticle == EMPTY) {
+                            if (m_grid.getType(nx, ny) != EMPTY) m_grid.setType(nx, ny, EMPTY);
+                        }
                         // Check if the position is valid and the cell is empty
-                        if (m_grid.isEmpty(nx, ny)) {
+                        else if (m_grid.isEmpty(nx, ny)) {
                             // Randomly spread the particles around the radius
                             if (std::uniform_int_distribution<int> {0, 100}(rng) < 30 ) {
                                 m_grid.setType(nx, ny, m_selectedParticle);

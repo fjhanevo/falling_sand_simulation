@@ -22,12 +22,16 @@ Get the Particle type at the current index in m_cells
 
 void Grid::setType(int x, int y, Particle type)
 /*
-Set the Particle the the current index to a given type.
+Set the current index to a given type
+Clearing a cell also wipes the data bytes so no
+stale velocity/lifetime state leaks into the next frame 
 */
 {
-    // Get the cell 
     uint32_t& cell { m_cells[getIndex(x, y)] };
-    // Update the cell using the OR operator
+    if (type == EMPTY) {
+        cell = EMPTY;
+        return;
+    }
     cell = (cell & ~TYPE_MASK) | (uint32_t)(type);
 }
 
@@ -146,10 +150,10 @@ bool Grid::isEmpty(int x, int y) const
 Check if the cell is empty or if it contains Smoke
 */
 {
-    return inBounds(x, y) && ((m_cells[getIndex(x, y)] == EMPTY) || (m_cells[getIndex(x, y)] == SMOKE));
+    if (!inBounds(x, y)) return false;
+    Particle type { (Particle)(m_cells[getIndex(x, y)] & TYPE_MASK) };
+    return type == EMPTY || type == SMOKE;
 }
-
-
 
 void Grid::resetUpdateFlags()
 /*

@@ -39,7 +39,7 @@ Renderer::~Renderer()
     glDeleteProgram(m_shaderProgram);
 }
 
-void Renderer::drawGrid(const Grid& grid)
+void Renderer::drawGrid(const Grid& grid, int brushCx, int brushCy, int brushR)
 {
     // fill pixel buffer from grid data
     for (int y { 0 }; y < m_gridH; ++y) {
@@ -49,6 +49,25 @@ void Renderer::drawGrid(const Grid& grid)
             m_pixelBuffer[i]   = r;
             m_pixelBuffer[i+1] = g;
             m_pixelBuffer[i+2] = b;
+        }
+    }
+
+    // add a highlight to show the brush radius
+    if (brushR > 0) {
+        const int radius { brushR * brushR };
+        const int innerRadius { (brushR - 1) * (brushR - 1) };
+        for (int dy { -brushR }; dy <= brushR; ++dy) {
+            for (int dx { -brushR }; dx <= brushR; ++dx) {
+                int d2 { dx * dx + dy * dy };
+                if (d2 > radius || d2 < innerRadius) continue;
+                int x { brushCx + dx };
+                int y { brushCy + dy };
+                if (x < 0 || x >= m_gridW || y < 0 || y >= m_gridH) continue;
+                int i { (x + y * m_gridW) * 3 };
+                m_pixelBuffer[i]    = 249;
+                m_pixelBuffer[i+1]  = 248;
+                m_pixelBuffer[i+2]  = 242;
+            }
         }
     }
 

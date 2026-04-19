@@ -12,7 +12,7 @@ public:
     Renderer(int gridW, int gridH);
     ~Renderer();
 
-    void drawGrid(const Grid& grid);
+    void drawGrid(const Grid& grid, int brushCx = -1, int brushCy=-1, int brushR=0);
     void buildQuad(int winWidth, int winHeight);
 
 private:

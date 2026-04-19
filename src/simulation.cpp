@@ -72,5 +72,16 @@ void Simulation::update(float dt)
 
 void Simulation::render()
 {
-    m_renderer.drawGrid(m_grid);
+    // convert cursor coords to grid coordinates for the brush highlight
+    int gridDisplayWidth { m_width - RIGHT_PANEL_PX };
+    int gridDisplayHeight { m_height - BOTTOM_PANEL_PX };
+
+    int bx { -1 }, by { -1 }, br { 0 };
+    if (m_mouseX >= 0 && m_mouseX < gridDisplayWidth &&
+        m_mouseY >= 0 && m_mouseY < gridDisplayHeight) {
+        bx = (int)((float)m_mouseX / gridDisplayWidth  * GRID_WIDTH);
+        by = (int)((float)m_mouseY / gridDisplayHeight * GRID_HEIGHT);
+        br = m_brushSize;
+    }
+    m_renderer.drawGrid(m_grid, bx, by, br);
 }

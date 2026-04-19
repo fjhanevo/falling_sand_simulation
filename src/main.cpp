@@ -49,6 +49,9 @@ int main()
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetScrollCallback(window,scroll_callback);
 
+    // Hide the default cursor
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
     glViewport(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

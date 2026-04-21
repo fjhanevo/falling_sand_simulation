@@ -1,4 +1,5 @@
 #include "grid.h"
+#include "particle.h"
 #include "particle_registry.h"
 #include <algorithm>
 #include <cstdint>
@@ -94,12 +95,6 @@ int Grid::getCellDataY(int x, int y) const
 
 void Grid::setCellDataX(int x, int y, int val)
 {
-    // if (!inBounds(x, y)) return;
-    // // Get the cell
-    // uint32_t &cell { m_cells[getIndex(x, y)] };
-    // // Clean the cell and apply the new value 
-    // cell = (cell & ~VEL_X_MASK) | ((uint32_t)(val & 0xFF) << VEL_X_SHIFT);
-
     if (!inBounds(x, y)) return;
     // Clamp to a valid range before storing (-128 to 127)
     uint32_t vel { (uint32_t)(std::clamp(val, -128, 127) + VEL_BIAS) & 0xFF };

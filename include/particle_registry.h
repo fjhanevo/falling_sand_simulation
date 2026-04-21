@@ -5,3 +5,4 @@
 
 void updateParticle(Grid& grid, int x, int y);
 std::array<uint8_t, 3> getParticleColor(const Grid& grid, int x, int y);
+std::array<uint8_t, 3> getParticleBaseColor(Particle type);

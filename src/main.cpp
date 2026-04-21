@@ -122,6 +122,9 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
             case GLFW_KEY_5:
                 sim->setSelectedParticle(STONE);
                 break;
+            case GLFW_KEY_6:
+                sim->setSelectedParticle(SOIL);
+                break;
 
         }
     }
@@ -135,6 +138,7 @@ static void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     sim->setWidth(width);
     sim->setHeight(height);
     sim->getRenderer().buildQuad(width, height);
+    sim->rebuildButtons();
     glViewport(0,0, width, height);
 
 }
@@ -144,8 +148,14 @@ static void cursor_position_callback(GLFWwindow *window, double xpos, double ypo
     // Get the Simulation instance
     Simulation *sim { static_cast<Simulation*>(glfwGetWindowUserPointer(window)) };
     if (!sim) return;
-    sim->m_mouseX = xpos;
-    sim->m_mouseY = ypos;
+
+    // Cursor arrives in window coords; convert to framebuffer coords so it
+    // matches the coordinate space we use for rendering and hit-testing.
+    int winW, winH, fbW, fbH;
+    glfwGetWindowSize(window, &winW, &winH);
+    glfwGetFramebufferSize(window, &fbW, &fbH);
+    sim->m_mouseX = (int)(xpos * ((double)fbW / winW));
+    sim->m_mouseY = (int)(ypos * ((double)fbH / winH));
 }
 
 static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)

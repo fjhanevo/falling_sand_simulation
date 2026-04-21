@@ -7,6 +7,7 @@
 #include "fire.h"
 #include "smoke.h"
 #include "stone.h"
+#include "soil.h"
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -21,6 +22,7 @@ static const UpdateFn s_updateTable[] = {
     updateFire,     // FIRE 
     updateSmoke,    // SMOKE
     updateStone,    // STONE
+    updateSoil,    // STONE
 };
 
 void updateParticle(Grid &grid, int x, int y)
@@ -30,15 +32,17 @@ void updateParticle(Grid &grid, int x, int y)
         s_updateTable[type](grid, x, y);
 }
 
-// --- Color table ---
+// --- Color table --- (indexed by Particle enum value; must have one entry per enum)
 static const uint8_t s_colorTable[][3] = {
 //     R    G    B
-    {  0,   0,   0  },  // EMPTY
+    {   0,   0,   0 },  // EMPTY
     { 246, 215, 176 },  // SAND
     {  35, 137, 218 },  // WATER
     { 139, 105,  20 },  // WOOD
-    { 139, 105,  20 },  // WOOD
-    {  43,  43,  42},   // STONE
+    { 255, 120,  20 },  // FIRE  (fallback; FIRE normally uses lifetime-based color)
+    { 120, 120, 120 },  // SMOKE (fallback; SMOKE normally uses lifetime-based color)
+    {  43,  43,  42 },  // STONE
+    {  84,  63,  47 },  // SOIL
 };
 
 std::array<uint8_t, 3> getParticleColor(const Grid& grid, int x, int y)
@@ -64,4 +68,11 @@ std::array<uint8_t, 3> getParticleColor(const Grid& grid, int x, int y)
              s_colorTable[type][1],
              s_colorTable[type][2]
     };
+}
+
+std::array<uint8_t, 3> getParticleBaseColor(Particle type)
+{
+    return { s_colorTable[type][0],
+             s_colorTable[type][1],
+             s_colorTable[type][2] };
 }

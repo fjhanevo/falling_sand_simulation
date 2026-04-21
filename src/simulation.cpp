@@ -1,16 +1,73 @@
 #include "simulation.h"
 #include "constants.h"
 #include "particle.h"
+#include "particle_registry.h"
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <random>
 
 static std::mt19937 rng { std::random_device{}() };
 
 constexpr float MOVE_INTERVAL { 0.006f };
+constexpr int BTN_HEIGHT { 24 };
+constexpr int BTN_WIDTH  { 24 };
+constexpr int BTN_OFFSET { 10 };
+constexpr int BTN_BORDER {  2 };
+
+static const Particle ParticleBtns[] = {
+    SAND, WATER, WOOD, FIRE, STONE, SOIL, EMPTY
+};
 
 Simulation::Simulation(int width, int height)
     : m_width(width), m_height(height), m_moveTimer(0.0f)
 {
+    rebuildButtons();
+}
+
+void Simulation::rebuildButtons()
+{
+    m_buttons.clear();
+    const int panelLeft { m_width - RIGHT_PANEL_PX };
+    int bx { panelLeft + BTN_OFFSET };
+    int by { BTN_OFFSET };
+
+    for (Particle p : ParticleBtns) {
+        m_buttons.push_back({ bx, by, BTN_WIDTH, BTN_HEIGHT, p });
+        by += BTN_HEIGHT + BTN_OFFSET;
+    }
+}
+
+bool Simulation::hitTest(int mx, int my, Particle &out) const
+{
+    for (const Button &b : m_buttons) {
+        if (mx >= b.x && mx < b.x + b.w &&
+            my >= b.y && my < b.y + b.h) {
+            out = b.particle;
+            return true;
+        }
+    }
+    return false;
+}
+
+void Simulation::drawButtons(const std::vector<Button> &buttons, Particle selected)
+{
+    glEnable(GL_SCISSOR_TEST);
+    for (const Button &b : buttons) {
+        int glY { m_height - b.y - b.h };
+
+        if (b.particle == selected) {
+            glScissor(b.x - BTN_BORDER, glY - BTN_BORDER,
+                      b.w + 2 * BTN_BORDER, b.h + 2 * BTN_BORDER);
+            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
+
+        auto c { getParticleBaseColor(b.particle) };
+        glScissor(b.x, glY, b.w, b.h);
+        glClearColor(c[0] / 255.0f, c[1] / 255.0f, c[2] / 255.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
+    glDisable(GL_SCISSOR_TEST);
 }
 
 void Simulation::processInput()
@@ -51,7 +108,10 @@ void Simulation::processInput()
                 }
             }
         }
-        // TODO: Add UI support  
+        else {
+            Particle picked;
+            if (hitTest(m_mouseX, m_mouseY, picked)) m_selectedParticle = picked;
+        }
     }
 }
 
@@ -84,4 +144,5 @@ void Simulation::render()
         br = m_brushSize;
     }
     m_renderer.drawGrid(m_grid, bx, by, br);
+    drawButtons(m_buttons, m_selectedParticle);
 }
